@@ -13,7 +13,7 @@ module VarnishCookbook
         raise "Output of #{cmd_str} was nil; can't determine varnish version" unless cmd_stdout
         Chef::Log.debug "#{cmd_str} ran and detected varnish version: #{cmd_stdout}"
 
-        matches = cmd_stdout.match(/varnish-([0-9])\./)
+        matches = cmd_stdout.match(/varnish-([0-9.]+)./)
         version_found = matches && matches.captures && matches.captures[0]
         raise "Cannot parse varnish version from #{cmd_stdout}" unless version_found
 
@@ -50,6 +50,16 @@ module VarnishCookbook
         command '/bin/systemctl --system daemon-reload'
         action :nothing
       end
+    end
+  end
+
+  module TemplateHelpers
+    # Whether the node is rocking a specific version
+    #   is_version?('4.1.x', node) => node is on 4.1
+    #   is_version?('4.x', node) => node is on 4.1, 4.0
+    def is_version?(version, node)
+      regexp = /\A#{version.gsub(/\.x/, "[\\d.-]*(~.+)?")}\Z/
+      node['varnish']['version'] =~ regexp
     end
   end
 end

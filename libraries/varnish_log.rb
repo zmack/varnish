@@ -17,6 +17,7 @@ class Chef
                                      default: '%h|%l|%u|%t|\"%r\"|%s|%b|\"%{Referer}i\"|\"%{User-agent}i\"'
       attribute :instance_name, kind_of: String,
                                 default: nil
+      attribute :additional_params, kind_of: String, default: nil
     end
   end
 
@@ -36,6 +37,7 @@ class Chef
 
       def configure_varnish_log
         template "/etc/default/#{new_resource.log_format}" do
+          helpers(VarnishCookbook::TemplateHelpers)
           if node['init_package'] == 'init'
             path "/etc/default/#{new_resource.log_format}"
             source 'lib_varnishlog.erb'
@@ -53,11 +55,19 @@ class Chef
           mode '0644'
           variables(
             config: new_resource,
-            varnish_version: varnish_version
+            varnish_version: varnish_version,
+            additional_params: new_resource.additional_params
           )
           action :create
           notifies :restart, "service[#{new_resource.log_format}]", :delayed
         end
+
+        if varnish_version =~ /\A4.1/
+          user "varnishlog" do
+            group "varnish"
+          end
+        end
+
         if new_resource.logrotate
           template "#{new_resource.logrotate_path}/#{new_resource.log_format}" do
             source 'lib_logrotate_varnishlog.erb'

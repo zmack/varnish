@@ -63,6 +63,7 @@ class Chef
         end
 
         tmp = template '/etc/default/varnish' do
+          helpers(VarnishCookbook::TemplateHelpers)
           path varnish_platform_defaults[:path]
           source varnish_platform_defaults[:source]
           cookbook 'varnish'

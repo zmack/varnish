@@ -23,6 +23,7 @@ include_recipe 'varnish::repo' if node['varnish']['use_default_repo']
 package 'varnish'
 
 template node['varnish']['default'] do
+  helpers(VarnishCookbook::TemplateHelpers)
   source node['varnish']['conf_source']
   cookbook node['varnish']['conf_cookbook']
   owner 'root'
@@ -32,6 +33,7 @@ template node['varnish']['default'] do
 end
 
 template "#{node['varnish']['dir']}/#{node['varnish']['vcl_conf']}" do
+  helpers(VarnishCookbook::TemplateHelpers)
   source node['varnish']['vcl_source']
   cookbook node['varnish']['vcl_cookbook']
   owner 'root'

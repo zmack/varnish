@@ -1,0 +1,39 @@
+DEPENDENCIES
+  disable_ipv6
+    path: test/fixtures/cookbooks/disable_ipv6
+  install_varnish
+    path: test/fixtures/cookbooks/install_varnish
+  varnish
+    path: .
+    metadata: true
+  yum-epel
+
+GRAPH
+  apt (2.9.2)
+  build-essential (6.0.0)
+    compat_resource (>= 12.10)
+    mingw (>= 1.1)
+    seven_zip (>= 0.0.0)
+  chef-sugar (3.3.0)
+  chef_handler (1.4.0)
+  compat_resource (12.10.6)
+  disable_ipv6 (0.0.1)
+  install_varnish (0.0.1)
+    apt (>= 0.0.0)
+    varnish (>= 0.0.0)
+  mingw (1.2.1)
+    compat_resource (>= 0.0.0)
+    seven_zip (>= 0.0.0)
+  seven_zip (2.0.1)
+    windows (>= 1.2.2)
+  varnish (2.3.1)
+    apt (~> 2.4)
+    build-essential (>= 0.0.0)
+    chef-sugar (>= 0.0.0)
+    yum (~> 3.0)
+    yum-epel (>= 0.0.0)
+  windows (1.44.0)
+    chef_handler (>= 0.0.0)
+  yum (3.11.0)
+  yum-epel (0.7.0)
+    yum (>= 3.6.3)

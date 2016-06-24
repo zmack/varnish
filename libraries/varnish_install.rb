@@ -10,6 +10,7 @@ class Chef
       attribute :package_name, kind_of: String, default: 'varnish'
       attribute :vendor_repo, kind_of: [TrueClass, FalseClass], default: false
       attribute :vendor_version, kind_of: String, default: '4.0'
+      attribute :package_version, kind_of: String, default: nil
     end
   end
 
@@ -62,6 +63,9 @@ class Chef
 
         pack = package new_resource.package_name do
           action :nothing
+          if !new_resource.package_version.nil?
+            version new_resource.package_version
+          end
           notifies 'enable', "service[#{new_resource.package_name}]", 'delayed'
           notifies 'restart', "service[#{new_resource.package_name}]", 'delayed'
         end

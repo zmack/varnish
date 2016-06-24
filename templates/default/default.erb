@@ -21,18 +21,20 @@ INSTANCE=<%= node['varnish']['instance'] %>
 
 # Pass the Daemon options
 
-DAEMON_OPTS="-a <%= node['varnish']['listen_address'] %>:<%= node['varnish']['listen_port'] %> \
+DAEMON_OPTS=" -a <%= node['varnish']['listen_address'] %>:<%= node['varnish']['listen_port'] %> \
               -f <%= node['varnish']['dir'] %>/<%= node['varnish']['vcl_conf'] %> \
               -T <%= node['varnish']['admin_listen_address'] %>:<%= node['varnish']['admin_listen_port'] %> \
+          <%- if !is_version?('4.1.x', node) -%>
               -u <%= node['varnish']['user'] %> -g <%= node['varnish']['group'] %> \
+          <%- end -%>
               -t <%= node['varnish']['ttl'] %> \
-             <%- if node['platform_family'] == 'debian' %>
+          <%- if node['platform_family'] == 'debian' -%>
               -n $INSTANCE \
-             <%- end %>
+          <%- end -%>
               -s <%= node['varnish']['storage'] %>,<%= (node['varnish']['storage']=='file')?"#{node['varnish']['storage_file']},":'' %><%= node['varnish']['storage_size'] %> \
-              <%- if !(node['varnish']['parameters']).nil? %>
-                <%- node['varnish']['parameters'].sort.each do |param, value| %>
-                  -p <%= param + "=" + value %> \
-                <%- end %>
-              <%- end %>
+          <%- if !(node['varnish']['parameters']).nil? %>
+            <%- node['varnish']['parameters'].sort.each do |param, value| %>
+              -p <%= "#{param}=#{value}" %> \
+            <%- end -%>
+          <%- end -%>
               -S <%= node['varnish']['secret_file'] %>"

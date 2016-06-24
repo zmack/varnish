@@ -8,7 +8,7 @@
 <%= "#{@config.log_format.upcase}_ENABLED=1" %>
 LOGFILE=<%= @config.file_name %>
 PIDFILE=<%= @config.pid %>
-<%- if @config.log_format == 'varnishncsa' %>
+<%- if @config.log_format == 'varnishncsa' && !@config.ncsa_format_string.empty? %>
 LOG_FORMAT="<%= @config.ncsa_format_string %>"
 <%- end %>
 
@@ -16,11 +16,15 @@ LOG_FORMAT="<%= @config.ncsa_format_string %>"
 # the -n switch, to have more instances on a single server.
 INSTANCE=<%= @config.instance_name || node['hostname'] %>
 # Override the Daemon options
-DAEMON_OPTS="-a -w $LOGFILE -D -P $PIDFILE \
-             <%- if node['platform_family'] == 'debian' %>
+
+DAEMON_OPTS=" -a -w $LOGFILE -D -P $PIDFILE \
+          <%- if node['platform_family'] == 'debian' %>
               -n $INSTANCE \
-             <%- end %>
-	     <%- if @config.log_format == 'varnishncsa' && @varnish_version.to_i > 2 %>
-	     -F '${LOG_FORMAT}' \
-	     <%- end %>
+          <%- end %>
+          <%- if !@additional_params.nil? -%>
+              <%= @additional_params %> \
+          <%- end -%>
+          <%- if @config.log_format == 'varnishncsa' && !@config.ncsa_format_string.empty? && @varnish_version.to_i > 2 %>
+              -F '${LOG_FORMAT}' \
+          <%- end -%>
           "

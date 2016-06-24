@@ -29,19 +29,20 @@ STORAGE=<%= [@config.storage, @config.malloc_size].compact.join(",") %>
 <% end %>
 
 # Pass the Daemon options
-
-DAEMON_OPTS="-a <%= @config.listen_address %>:<%= @config.listen_port %> \
+DAEMON_OPTS=" -a <%= @config.listen_address %>:<%= @config.listen_port %> \
               -f <%= @config.path_to_vcl %> \
               -T <%= @config.admin_listen_address %>:<%= @config.admin_listen_port %> \
-              -u <%= @config.user %> -g <%= @config.group %> \
+          <%- if !is_version?('4.1.x', node) -%>
+              -u <%= node['varnish']['user'] %> -g <%= node['varnish']['group'] %> \
+          <%- end -%>
               -t <%= @config.ttl %> \
-             <%- if node['platform_family'] == 'debian' %>
+           <%- if node['platform_family'] == 'debian' -%>
               -n $INSTANCE \
-             <%- end %>
+           <%- end %>
               -s $STORAGE \
-              <%- unless (@config.parameters).nil? %>
-                <%- @config.parameters.sort.each do |param, value| %>
-                  -p <%= param.to_s + "=" + value %> \
-                <%- end %>
-              <%- end %>
+           <%- unless (@config.parameters).nil? %>
+             <%- @config.parameters.sort.each do |param, value| %>
+              -p <%= "#{param}=#{value}" %> \
+             <%- end -%>
+           <%- end -%>
               -S <%= @config.path_to_secret %>"

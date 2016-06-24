@@ -37,6 +37,7 @@ class Chef
         end
 
         tmp = template '/etc/varnish/default.vcl' do
+          helpers(VarnishCookbook::TemplateHelpers)
           source new_resource.vcl_source
           cookbook new_resource.vcl_cookbook
           owner 'root'
