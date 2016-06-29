@@ -81,12 +81,10 @@ class Chef
             only_if { ::File.exist?(new_resource.logrotate_path) }
           end
         end
+
         service new_resource.log_format do
           supports restart: true, reload: true
-          action %w(enable start)
-          retries 5
-          retry_delay 5
-          only_if { sleep(15) }
+          action :enable
         end
       end
     end
