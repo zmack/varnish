@@ -1,6 +1,8 @@
 module VarnishCookbook
   # Helper methods to be used in multiple Varnish cookbook libraries.
   module Helpers
+    VERSION_MATCH_REGEXP = /varnish-([0-9.]+)./
+
     def varnish_version
       cmd_str = 'varnishd -V 2>&1'
       cmd = Mixlib::ShellOut.new(cmd_str)
@@ -13,9 +15,9 @@ module VarnishCookbook
         raise "Output of #{cmd_str} was nil; can't determine varnish version" unless cmd_stdout
         Chef::Log.debug "#{cmd_str} ran and detected varnish version: #{cmd_stdout}"
 
-        matches = cmd_stdout.match(/varnish-([0-9.]+)./)
+        matches = cmd_stdout.match(VERSION_MATCH_REGEXP) || "varnish-#{node['varnish']['version']}".match(VERSION_MATCH_REGEXP)
         version_found = matches && matches.captures && matches.captures[0]
-        raise "Cannot parse varnish version from #{cmd_stdout}" unless version_found
+        raise "Cannot parse varnish version from '#{cmd_stdout.strip}' or '#{node['varnish']['version']}'" unless version_found
 
         return version_found
       rescue => ex
