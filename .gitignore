@@ -10,4 +10,5 @@ Gemfile.lock
 .cache
 .kitchen
 bin
+tags
 .kitchen.local.yml
